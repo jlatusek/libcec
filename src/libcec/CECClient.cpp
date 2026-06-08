@@ -308,8 +308,10 @@ void CCECClient::SetSupportedDeviceTypes(void)
 
     // get the supported device type. the handler will replace types it doesn't support by one it does support
     cec_device_type type = tvHandler->GetReplacementDeviceType(m_configuration.deviceTypes.types[iPtr]);
-    if (!types.IsSet(type))
-      types.Add(type);
+    // PATCH: dedup removed so that repeating the same device type (e.g. 3x
+    // PLAYBACK_DEVICE) claims multiple distinct LAs (4, 8, 11). Used by the
+    // cec-playback-emulator to squat all Playback slots on the bus.
+    types.Add(type);
   }
   m_processor->GetTV()->MarkHandlerReady();
 
